@@ -353,13 +353,9 @@ public class GraphicsDisplay extends JPanel {
 
         }
         if (antiClockRotate) {
-            AffineTransform at = AffineTransform.getRotateInstance(-Math.PI/2, getSize().getWidth()/2, getSize().getHeight()/2);
-            at.concatenate(new AffineTransform(getSize().getHeight()/getSize().getWidth(), 0.0, 0.0, getSize().getWidth()/getSize().getHeight(),
-                    (getSize().getWidth()-getSize().getHeight())/2, (getSize().getHeight()-getSize().getWidth())/2));
-            canvas.setTransform(at);
-
-
+            canvas.rotate(Math.toRadians(-90), (float)getWidth()/2, (float)getHeight()/2);
         }
+
         if(showGrid)
             paintGrid(canvas);
 
