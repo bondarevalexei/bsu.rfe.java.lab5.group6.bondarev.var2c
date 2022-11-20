@@ -63,11 +63,11 @@ public class GraphicsDisplay extends JPanel {
     public GraphicsDisplay ()	{
         setBackground(Color.WHITE);
         axisStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, null, 0.0f);
-        markerStroke = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 5.0f, null, 0.0f);
+        markerStroke = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 5.0f, new float[]{4, 1, 1, 1, 2, 1, 1 ,1, 4}, 0.0f);
         selectionStroke = new BasicStroke(1.0F, 0, 0, 10.0F, new float[] { 10, 10 }, 0.0F);
         gridStroke = new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 5.0f, new float [] {5,5}, 2.0f);
         axisFont = new Font("Serif", Font.BOLD, 36);
-        labelsFont = new java.awt.Font("Serif",0,10);
+        labelsFont = new java.awt.Font("Serif", Font.PLAIN,10);
         addMouseMotionListener(new MouseMotionHandler());
         addMouseListener(new MouseHandler());
     }
@@ -79,21 +79,21 @@ public class GraphicsDisplay extends JPanel {
         this.originalData = new ArrayList(graphicsData.size());
         for (Double[] point : graphicsData) {
             Double[] newPoint = new Double[2];
-            newPoint[0] = new Double(point[0].doubleValue());
-            newPoint[1] = new Double(point[1].doubleValue());
+            newPoint[0] = point[0];
+            newPoint[1] = point[1];
             this.originalData.add(newPoint);
         }
-        this.minX = ((Double[])graphicsData.get(0))[0].doubleValue();
-        this.maxX = ((Double[])graphicsData.get(graphicsData.size() - 1))[0].doubleValue();
-        this.minY = ((Double[])graphicsData.get(0))[1].doubleValue();
+        this.minX = ((Double[]) graphicsData.get(0))[0];
+        this.maxX = ((Double[]) graphicsData.get(graphicsData.size() - 1))[0];
+        this.minY = ((Double[]) graphicsData.get(0))[1];
         this.maxY = this.minY;
 
         for (int i = 1; i < graphicsData.size(); i++) {
-            if (((Double[])graphicsData.get(i))[1].doubleValue() < this.minY) {
-                this.minY = ((Double[])graphicsData.get(i))[1].doubleValue();
+            if (((Double[]) graphicsData.get(i))[1] < this.minY) {
+                this.minY = ((Double[]) graphicsData.get(i))[1];
             }
-            if (((Double[])graphicsData.get(i))[1].doubleValue() > this.maxY) {
-                this.maxY = ((Double[])graphicsData.get(i))[1].doubleValue();
+            if (((Double[]) graphicsData.get(i))[1] > this.maxY) {
+                this.maxY = ((Double[]) graphicsData.get(i))[1];
             }
         }
 
@@ -170,12 +170,12 @@ public class GraphicsDisplay extends JPanel {
         Double currentY = null;
         for (Double[] point : this.graphicsData)
         {
-            if ((point[0].doubleValue() >= this.viewport[0][0]) && (point[1].doubleValue() <= this.viewport[0][1]) &&
-                    (point[0].doubleValue() <= this.viewport[1][0]) && (point[1].doubleValue() >= this.viewport[1][1]))
+            if ((point[0] >= this.viewport[0][0]) && (point[1] <= this.viewport[0][1]) &&
+                    (point[0] <= this.viewport[1][0]) && (point[1] >= this.viewport[1][1]))
             {
                 if ((currentX != null) && (currentY != null)) {
-                    canvas.draw(new Line2D.Double(xyToPoint(currentX.doubleValue(), currentY.doubleValue()),
-                            xyToPoint(point[0].doubleValue(), point[1].doubleValue())));
+                    canvas.draw(new Line2D.Double(xyToPoint(currentX, currentY),
+                            xyToPoint(point[0], point[1])));
                 }
                 currentX = point[0];
                 currentY = point[1];
@@ -222,7 +222,7 @@ public class GraphicsDisplay extends JPanel {
         for (Double[] point : graphicsData) {
             i++;
 
-            if(isSpecialPoint(point[1]) == true)
+            if(isSpecialPoint(point[1]))
                 canvas.setColor(Color.GREEN);
             else
                 canvas.setColor(Color.RED);
@@ -280,7 +280,6 @@ public class GraphicsDisplay extends JPanel {
                     break;}
             }
             else{
-                flag = false;
                 break;}
         }
 
@@ -322,8 +321,8 @@ public class GraphicsDisplay extends JPanel {
         }
         if (selectedMarker >= 0)
         {
-            Point2D.Double point = xyToPoint(((Double[])graphicsData.get(selectedMarker))[0].doubleValue(),
-                    ((Double[])graphicsData.get(selectedMarker))[1].doubleValue());
+            Point2D.Double point = xyToPoint(((Double[]) graphicsData.get(selectedMarker))[0],
+                    ((Double[]) graphicsData.get(selectedMarker))[1]);
             String label = "X=" + formatter.format(((Double[])graphicsData.get(selectedMarker))[0]) +
                     ", Y=" + formatter.format(((Double[])graphicsData.get(selectedMarker))[1]);
             Rectangle2D bounds = labelsFont.getStringBounds(label, context);
@@ -420,7 +419,7 @@ public class GraphicsDisplay extends JPanel {
         if (graphicsData == null) return -1;
         int pos = 0;
         for (Double[] point : graphicsData) {
-            Point2D.Double screenPoint = xyToPoint(point[0].doubleValue(), point[1].doubleValue());
+            Point2D.Double screenPoint = xyToPoint(point[0], point[1]);
             double distance = (screenPoint.getX() - x) * (screenPoint.getX() - x) + (screenPoint.getY() - y) * (screenPoint.getY() - y);
             if (distance < 100) return pos;
             pos++;
@@ -437,8 +436,8 @@ public class GraphicsDisplay extends JPanel {
 
             out.close();
 
-        }catch (FileNotFoundException e){
-
+        }catch (FileNotFoundException ignored) {
+            throw new RuntimeException(ignored);
         }
 
     }
@@ -478,7 +477,7 @@ public class GraphicsDisplay extends JPanel {
         public void mouseReleased(MouseEvent ev) {
             if (ev.getButton() != 1) return;
 
-            setCursor(Cursor.getPredefinedCursor(0));
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             if (changeMode) {
                 changeMode = false;
             } else {
@@ -498,15 +497,15 @@ public class GraphicsDisplay extends JPanel {
             if (changeMode) {
                 //rotate
                 double[] currentPoint = translatePointToXY(ev.getX(), ev.getY());
-                double newY = ((Double[])graphicsData.get(selectedMarker))[1].doubleValue() +
-                        (currentPoint[1] - ((Double[])graphicsData.get(selectedMarker))[1].doubleValue());
+                double newY = ((Double[]) graphicsData.get(selectedMarker))[1] +
+                        (currentPoint[1] - ((Double[]) graphicsData.get(selectedMarker))[1]);
                 if (newY > viewport[0][1]) {
                     newY = viewport[0][1];
                 }
                 if (newY < viewport[1][1]) {
                     newY = viewport[1][1];
                 }
-                ((Double[])graphicsData.get(selectedMarker))[1] = Double.valueOf(newY);
+                ((Double[])graphicsData.get(selectedMarker))[1] = newY;
                 repaint();
             } else {
                 double width = ev.getX() - selectionRect.getX();
