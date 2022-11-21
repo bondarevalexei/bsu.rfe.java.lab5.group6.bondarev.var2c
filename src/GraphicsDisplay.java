@@ -129,12 +129,6 @@ public class GraphicsDisplay extends JPanel {
         return new double[]{this.viewport[0][0] + x / this.scaleX, this.viewport[0][1] - y / this.scaleY};
     }
 
-    protected Point2D.Double shiftPoint(Point2D.Double src, double deltaX, double deltaY) {
-        Point2D.Double dest = new Point2D.Double();
-        dest.setLocation(src.getX() + deltaX, src.getY() + deltaY);
-        return dest;
-    }
-
     protected void paintGrid(Graphics2D canvas) {
         canvas.setStroke(gridStroke);
         canvas.setColor(Color.GRAY);
@@ -262,6 +256,7 @@ public class GraphicsDisplay extends JPanel {
         while (func > 0){
             if((func % 10) % 2 != 0)
                 return false;
+            func /= 10;
         }
 
         return true;
