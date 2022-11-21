@@ -84,7 +84,6 @@ public class MainFrame extends JFrame {
         shapeRotateAntiClockItem = new JCheckBoxMenuItem(rotatesShapeAntiClockAction);
         graphicsMenu.add(shapeRotateAntiClockItem);
         shapeRotateAntiClockItem.setEnabled(false);
-        graphicsMenu.addSeparator();
 
         Action showGridAction = new AbstractAction("Показать линии сетки") {
             @Override
@@ -114,7 +113,6 @@ public class MainFrame extends JFrame {
         showMarkersMenuItem = new JCheckBoxMenuItem(showMarkersAction);
         graphicsMenu.add(showMarkersMenuItem);
         showMarkersMenuItem.setSelected(true);
-        graphicsMenu.addSeparator();
 
         Action resetGraphicsAction = new AbstractAction("Отменить все изменения") {
             public void actionPerformed(ActionEvent event) {
