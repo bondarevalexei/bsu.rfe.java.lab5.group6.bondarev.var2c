@@ -19,7 +19,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 
-
 public class MainFrame extends JFrame {
 
     private ArrayList graphicsData = new ArrayList(50);
@@ -32,27 +31,28 @@ public class MainFrame extends JFrame {
     private JCheckBoxMenuItem showGridMenuItem;
     private JMenuItem resetGraphicsMenuItem;
     private JMenuItem shapeRotateAntiClockItem;
-    private JMenuItem saveToTextMenuItem;
+    private JMenuItem saveToFileMenuItem;
     private JFileChooser fileChooser = null;
-    public MainFrame()  {
+
+    public MainFrame() {
         super("Вывод графика функции");
         setSize(WIDTH, HEIGHT);
         Toolkit kit = Toolkit.getDefaultToolkit();
-        setLocation((kit.getScreenSize().width - WIDTH)/2, (kit.getScreenSize().height - HEIGHT)/2);
+        setLocation((kit.getScreenSize().width - WIDTH) / 2, (kit.getScreenSize().height - HEIGHT) / 2);
         setExtendedState(MAXIMIZED_BOTH);
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         JMenu fileMenu = new JMenu("Файл");
         menuBar.add(fileMenu);
-        Action openGraphicsAction = new AbstractAction("Открыть файл") {
 
+        Action openGraphicsAction = new AbstractAction("Открыть файл") {
             public void actionPerformed(ActionEvent arg0) {
-                if (fileChooser==null) {
+                if (fileChooser == null) {
                     fileChooser = new JFileChooser();
                     fileChooser.setCurrentDirectory(new File("."));
                 }
-                if (fileChooser.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION);
+                if (fileChooser.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) ;
                 openGraphics(fileChooser.getSelectedFile());
 
             }
@@ -60,26 +60,25 @@ public class MainFrame extends JFrame {
         fileMenu.add(openGraphicsAction);
 
         Action saveToTextAction = new AbstractAction("Сохранить в файл") {
-
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                if (fileChooser == null){
+                if (fileChooser == null) {
                     fileChooser = new JFileChooser();
                     fileChooser.setCurrentDirectory(new File("."));
                 }
-                if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION){
-                    display.saveToTextFile(fileChooser.getSelectedFile());
+                if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
+                    display.saveToFile(fileChooser.getSelectedFile());
                 }
             }
         };
-        saveToTextMenuItem = fileMenu.add(saveToTextAction);
+        saveToFileMenuItem = fileMenu.add(saveToTextAction);
 
         JMenu graphicsMenu = new JMenu("График");
         menuBar.add(graphicsMenu);
 
         Action rotatesShapeAntiClockAction = new AbstractAction("Повернуть на 90 влево") {
             public void actionPerformed(ActionEvent e) {
-                display.setAntiClockRotate(shapeRotateAntiClockItem.isSelected());
+                display.setRotateLeft(shapeRotateAntiClockItem.isSelected());
             }
         };
         shapeRotateAntiClockItem = new JCheckBoxMenuItem(rotatesShapeAntiClockAction);
@@ -105,7 +104,6 @@ public class MainFrame extends JFrame {
         showAxisMenuItem = new JCheckBoxMenuItem(showAxisAction);
         graphicsMenu.add(showAxisMenuItem);
         showAxisMenuItem.setSelected(true);
-
 
         Action showMarkersAction = new AbstractAction("Показать маркеры точек") {
 
@@ -134,9 +132,9 @@ public class MainFrame extends JFrame {
         try {
             DataInputStream in = new DataInputStream(new FileInputStream(selectedFile));
             while (in.available() > 0) {
-                Double x = Double.valueOf(in.readDouble());
-                Double y = Double.valueOf(in.readDouble());
-                graphicsData.add(new Double[] { x, y });
+                double x = in.readDouble();
+                double y = in.readDouble();
+                graphicsData.add(new Double[]{x, y});
             }
             if (graphicsData.size() > 0) {
                 fileLoaded = true;
@@ -163,14 +161,14 @@ public class MainFrame extends JFrame {
             showAxisMenuItem.setEnabled(fileLoaded);
             showMarkersMenuItem.setEnabled(fileLoaded);
             shapeRotateAntiClockItem.setEnabled(fileLoaded);
-            saveToTextMenuItem.setEnabled(fileLoaded);
+            saveToFileMenuItem.setEnabled(fileLoaded);
             showGridMenuItem.setEnabled(fileLoaded);
         }
     }
+
     public static void main(String[] args) {
         MainFrame frame = new MainFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-
     }
 }
